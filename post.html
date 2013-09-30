@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Maria Carrasco">
+    <link rel="shortcut icon" href="/style/images/favicon.ico">
+    <link rel="icon" href="/style/images/favicon.ico">
+
+    <!--  <link href='http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700' rel='stylesheet' type='text/css'>
+      -->
+
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>    
+    <link rel="stylesheet" type="text/css" media="screen" href="/style/css/style.css">
+    <title>carrasco.in</title>
+    
+  </head>
+
+  <body>
+    
+    <div class="your_post add_post">
+      <div class="art">
+	<h1>Your Post</h1>
+	<div><img src="../img?img_id={{post.key()}}"></img></div>        
+	<div class="art_info">
+	  <div class="art_comment">{{post.comment}}</div>
+	  <div class="art_author">{{post.author}}</div>
+	  <div class="art_date">{{post.date}}</div>
+	</div>
+      </div>
+      <div class="all"><a href="/">HOME</a></div>
+    </div>
+  </body>
+
+</html>

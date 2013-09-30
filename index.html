@@ -1,0 +1,72 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Maria Carrasco">
+    <link rel="shortcut icon" href="/style/images/favicon.ico">
+    <link rel="icon" href="/style/images/favicon.ico">
+
+    <!--  <link href='http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700' rel='stylesheet' type='text/css'>
+      -->
+
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>    
+    <link rel="stylesheet" type="text/css" media="screen" href="/style/css/style.css">
+    <title>carrasco.in</title>
+    
+  </head>
+  <body>
+    <!--   <div class="user_sign">
+	   {{user}}
+	   <a href={{url|safe}}> {{url_linktext}}</a>
+    </div>-->
+    <div class="add_post">
+      <h1>Picture of the day</h1>
+
+      {% for art in arts %}
+      <div class="art">
+	<div><a href="/blog/{{art.key().id()}}"><img src="../img?img_id={{art.key()}}"></img></a></div>
+	<div class="art_info">
+	  <div class="art_comment">{{art.comment}}</div>
+	  <div class="art_author">{{art.author}}</div>
+	  <div class="art_date">{{art.date}}</div>
+	</div>
+      </div>
+      {% endfor %}
+      <div class="all"><a href="/blog/all">VIEW ALL</a></div>
+      <div class="all"><a href="/blog/newpost">Add Post</a></div>
+
+    </div>
+
+    <div class="info">
+      <div class="header">
+	<h1>Maria Carrasco</h1>
+      </div>
+      <div class="social">
+	<a href="http://instagram.com/kostspielig" style="margin-right:6px" target="_blank">
+	  <img alt="Instagram" src="/style/images/instagram.png">
+	</a>
+	<a href="http://twitter.com/kostspielig" style="margin-right:6px" target="_blank">
+	  <img alt="Twitter" src="/style/images/twitter.png">
+	</a>
+	<a href="http://www.flickr.com/photos/61733443@N04/" style="margin-right:6px" target="_blank">
+	  <img alt="Flickr" src="/style/images/flickr.png">
+	</a>
+	<a href="http://www.linkedin.com/pub/maria-carrasco/27/4a8/bb8" style="margin-right:0px" target="_blank"> 
+	  <img alt="Linkedin" src="/style/images/linkedin.png">
+	</a>
+      </div>
+    </div>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-44261878-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,202 @@
+/* Variables */
+$black_t: rgba(0, 0, 0, 0.7);
+$pink: #db5c7f;
+$pink_t: rgba(219, 92, 127, 0.7);
+$dark_grey: #333;
+$grey: #888;
+$grey_t: rgba(136, 136, 136, 0.7);
+$yellow: #d69906;
+$yellow_t: rgba(214, 153, 6, 0.7);
+$light_blue: #80bdf6;
+
+@mixin bback {
+    background-color: $black_t; 
+    color: white;
+}
+
+body { margin : 0; }
+html { 
+    background: url(/style/images/bg.JPG) no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='bg.JPG', sizingMethod='scale')"; 
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='.bg.JPG', sizingMethod='scale');  
+    /*font-family: 'Ubuntu', sans-serif;*/
+    font-family: 'Lato', sans-serif;
+}
+
+a {text-decoration:none;}
+div.user_sign {
+    float: right;
+    margin: 10px;
+
+    a { text-decoration: none; color:$dark_grey; 
+	&:hover {color: $yellow_t;}
+      }
+
+}
+div.info {
+    position : fixed;
+    bottom : 20px;
+    color : $pink;/* #fcf2db;*/
+    background : $black_t;
+    width : 530px;	  
+
+    div.header{ text-align:right; font-size: 1.5em; text-transform: uppercase; padding: 30px 50px 10px 0; float: right;
+		h1 { margin: 0px;}
+	      }
+    div.social{ padding: 0 50px 30px 0px; float:right; }
+
+}
+
+
+div.add_post {
+    width: 478px; float: right; margin: 40px 90px 0 0; 
+    
+    h1 { font-size: 2.5em; color: $pink; margin: 5px 0; }
+    
+    .art {  
+	padding: 30px;
+	margin-bottom: 5px;
+	@include bback;
+	&:hover {background-color: $pink_t;}
+	.art_info{
+	    margin-top: 10px;
+	    .art_comment {}
+	    .art_author {color: $light_blue; font-weight: bold;}
+	    .art_date {font-size: 0.6em;}
+	}
+    }
+    .all {
+	padding: 6px 8px; 
+	text-align: center; 
+	margin: 7px 0 20px 7px; 
+	width: 95px; 
+	float: right; 
+	font-weight: bold;
+	@include bback;
+	
+	a {color: white; text-decoration: none; }
+	&:hover {background-color: $yellow_t;}
+	&:hover a{ color: black;}
+    }
+    div {	
+	img {
+	    max-width: 416px;
+	}
+    }
+}
+
+/***************** YOUR POST PAGE ************************/
+
+div.add_post.your_post {width: 476px; margin: 40px auto; float: none; 
+			h1 {font-size: 2em; color: white; margin: 0 0 21px 0;}
+		       }
+
+/***************** NEW POST PAGE ************************/
+
+div.form_newpost {
+    background-color: $black_t;
+    padding: 30px;
+    margin: 40px 50px;
+    color: white;
+    width: 530px;
+    h1 {margin-top: 0;}
+    overflow:hidden;
+    label input, label textarea { border: 1px solid black; width: 100%;
+				  &:focus {outline: none; border: 1px solid $pink;}
+				}
+    label textarea {height: 50px;}
+    .submit {
+	background-color: $pink; float:left; color:white; padding: 9px 12px; border: none; cursor:pointer; margin-top:5px; font-weight: bold;
+	&:hover {background-color: $pink_t;}
+    }
+    div.submit { font-family: arial; margin-left: 5px; padding: 9px 10px; font-size: 0.80em; background-color:$grey;
+		 &:hover {background-color: $grey_t;}
+		 a {color: white;}
+	       }
+    div.error {color: $pink;}
+    input[type='file'] {
+	background: #000;
+	color: #fff;
+	padding: 6px 0px 6px 10px;
+	vertical-align: top;
+	margin: 2px 0 10px 0;
+    }
+}
+
+
+
+/*********************************************************************
+ *                    RESIZING THE WINDOW                             *
+ *********************************************************************/
+@media screen and (max-width: 1150px) {
+    div.info { width: 350px;} 
+}
+
+
+@media screen and (max-width: 700px) {
+    div.add_post {
+	float: none;
+	margin: auto;
+	width: 478px;
+	div {	
+	    img {
+		max-width: 416px;
+	    }
+	}
+    }
+    div.info { overflow: hidden; position:inherit;}
+    div.add_post { clear: both; overflow: hidden;}
+
+    div.add_post.your_post {width: 478px;}
+    div.info { width: 530px;} 
+}
+
+
+@media screen and (max-width: 990px) and (min-width:700px)  {
+    div.info {
+	width: 160px;
+	height: 410px;
+    }
+    div.info div.header {
+	/*JP    
+	float:none;padding: 150px 13px 32px 0;
+	text-align: right;
+	*/
+	padding: 106px 0px 39px 5px;
+	h1 {
+	    -webkit-transform: rotate(-90deg);
+	    -moz-transform: rotate(-90deg);
+	    -ms-transform: rotate(-90deg);
+	    -o-transform: rotate(-90deg);
+	    transform: rotate(-90deg);
+	    -webkit-transition: all 1s;
+	    -moz-transition: all 1s;
+	    -o-transition: all 1s;
+	    transition: all 1s;
+	    /*JP*/
+	    margin: -9px -44px 42px 0px;
+	}
+    }
+    div.info div.social {padding: 0 32px 29px 23px;}
+}
+
+
+
+@media screen and (min-width: 990px) {
+
+    div.add_post {
+	width: 562px;
+	div {	
+	    img {
+		max-width: 500px;
+	    }
+	}
+    }
+
+    div.add_post.your_post {width: 562px;}
+
+}
