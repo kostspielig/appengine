@@ -1,4 +1,5 @@
 import webapp2
+import hashlib
 import cgi
 import re
 import jinja2
@@ -6,8 +7,10 @@ import os
 import hmac
 import random
 import string
+import logging
 
 from google.appengine.api import users
+from google.appengine.api import memcache
 from google.appengine.ext import db
 from google.appengine.api import images
 
@@ -16,6 +19,10 @@ jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), a
 
 post =  000;
 SECRET = 'mmm';
+
+def datetimeformat(value, format='%H:%M / %d-%m-%Y'):
+    return value.strftime(format)
+jinja_env.filters['datetimeformat'] = datetimeformat
 
 def hash_str(s):
     return hmac.new(SECRET, s).hexdigest()
@@ -31,7 +38,17 @@ def check_secure_val(h):
 def make_salt():
     return ''.join(random.sample(string.letters, 5))
 
+def make_pw_hash(name, pw):
+    salt = make_salt()
+    return hashlib.sha256(name + pw + salt).hexdigest() + ','+ salt
 
+def valid_pw(name, pw, h):
+    hp = h.split(',')
+    if hp[0] == hashlib.sha256(name + pw + hp[1]).hexdigest():
+        return True
+    else:
+        return False
+    
 class Art(db.Model):
     """Models a user entry with an author, comment, avatar, and date."""
     author = db.StringProperty(required=True)
@@ -68,19 +85,41 @@ class Handler(webapp2.RequestHandler):
 
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
+        
+def all_arts(update = False):
+    key = 'all'
+    arts = memcache.get(key)
+    if arts is None or update:
+        arts = Art.all().order('-date')
+        arts = list(arts)
+        memcache.set(key,arts)
+    return arts
 
 class All(Handler):
     def get(self):
         self.render_front()
         
     def render_front(self):
-        arts = Art.all().order('-date')
+        arts = all_arts()
         noinfo = 1
         self.render("index.html", arts = arts, noinfo = noinfo)
-        
+
+def top_arts(update = False):
+    key = 'top'
+    arts = memcache.get(key)
+    if arts is None or update:
+        logging.error("DB QUERY")
+        arts = Art.all().order('-date').fetch(limit=3)
+        arts = list(arts)
+        memcache.set(key, arts)
+    else:
+        logging.error('get cached copy')
+    return arts
+
+
 class MainPage(Handler):
     def render_front(self):
-        arts = Art.all().order('-date').fetch(limit=3)
+        arts = top_arts()
         for art in arts:
             art.date = art.date
         user = users.get_current_user()
@@ -100,7 +139,10 @@ class MainPage(Handler):
 class Carrasco(Handler):
     def get(self):
         self.render("carrasco.html")
-		
+
+class NotFound(Handler):
+	def get(self):
+		self.render("404.html")		
 
 class Cookie(Handler):
     def get(self):
@@ -130,19 +172,21 @@ class NewPost(Handler):
         #    author = users.get_current_user().nickname()
         #else:
         author = self.request.get("author")
-        comment = self.request.get("comment")
+        comment = cgi.escape(self.request.get("comment"))
         img = self.request.get("avatar")
-        #img = self.request.get('avatar') 
-        #avatar = db.Blob(img)
+
+        logging.error("comment scaped?")
         
-        #avatar = images.Image(img)
-        if images.Image(img).width > 800:
-            img = images.resize(img, 800)
-            
         if author and comment and img:
+            #avatar = images.Image(img)
+            if images.Image(img).width > 800:
+                img = images.resize(img, 800)
+                
             avatar = db.Blob(img)
             a = Art(author=author, comment=comment, avatar=avatar)
             a.put()
+            all_arts(True)
+            top_arts(True)
             
             self.redirect("/blog/%s" % str(a.key().id()))
         else:
@@ -155,7 +199,8 @@ class PostPage(Handler):
         post = db.get(key)
 
         if not post:
-                self.error(404)
+                self.redirect("/notAllowed")
+                #self.error(404)
                 return
         
         self.render("post.html", post =  post)
@@ -170,10 +215,11 @@ class Image(webapp2.RequestHandler):
                 self.response.out.write("No image")
           
 app = webapp2.WSGIApplication([('/blog/?', MainPage),
-                              ('/blog/newpost', NewPost),
-                              ('/blog/all', All),
+                              ('/blog/newpost/?', NewPost),
+                              ('/blog/all/?', All),
                                ('/blog/([0-9]+)', PostPage),
                                ('/', MainPage),
-                               ('/img', Image)],
+                               ('/img', Image),
+							   ('/.*', NotFound)],
                               debug=True)
 
