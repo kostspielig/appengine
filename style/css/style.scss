@@ -1,25 +1,32 @@
 /* Variables */
 $black_t: rgba(0, 0, 0, 0.7);
-$pink: #db5c7f;
-$pink_t: rgba(219, 92, 127, 0.7);
+$pink: #EA6045; /* #db5c7f; */
+$pink_t: rgba(234, 96, 69, 0.7); /*rgba(219, 92, 127, 0.7);*/
 $dark_grey: #333;
 $grey: #888;
 $grey_t: rgba(136, 136, 136, 0.7);
-$yellow: #d69906;
-$yellow_t: rgba(214, 153, 6, 0.7);
+$yellow:  #F8CA4D; /*#d69906;*/
+$yellow_t: rgba(248, 202, 77, 0.7); /*rgba(214, 153, 6, 0.7);*/
 $light_blue: #80bdf6;
 $orange: #FC0;
 $green: #8fb73f;
 $blue: #86d5f2;
 
-@mixin bback {
-    background-color: $black_t; 
-    color: white;
-}
+$Red: #EA6045;
+$Yellow: #F8CA4D;
+$White: #F5E5C0;
+$BlueL: #3F5666;
+$Blue: #2F3440;
+
+
+@mixin bback { background-color: $black_t; color: white; }
+@mixin btn_grey { font-family: arial; margin-left: 5px; padding: 9px 10px; font-size: 0.80em; background-color:$grey; border: none; color: white; font-weight: bold; cursor: pointer;
+		  &:hover {background-color: $grey_t;}
+		  a {color: white;} }
 
 body { margin : 0; }
 html { 
-    background: url(/style/images/bg.JPG) no-repeat center center fixed; 
+    background: url(/style/images/bg.png) no-repeat center center fixed; 
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -30,7 +37,8 @@ html {
     font-family: 'Lato', sans-serif;
 }
 
-a {text-decoration:none;}
+a { text-decoration:none; }
+
 div.user_sign {
     float: right;
     margin: 10px;
@@ -38,8 +46,8 @@ div.user_sign {
     a { text-decoration: none; color:$dark_grey; 
 	&:hover {color: $yellow_t;}
       }
-
 }
+
 div.info {
     position : fixed;
     bottom : 20px;
@@ -50,15 +58,31 @@ div.info {
     div.header{ text-align:right; font-size: 1.5em; text-transform: uppercase; padding: 30px 50px 10px 0; float: right;
 		h1 { margin: 0px;}
 	      }
-    div.social{ padding: 0 50px 30px 0px; float:right; }
-
+    div.social{ padding: 0 50px 30px 0px; float:right; 
+		a { width: 32px; height: 32px; display: inline-block; margin-left: 8px; background: transparent url(../images/icons/social_icons.png) no-repeat 0 0;}
+		#instagram { background-position: -64px -32px; 
+			     &:hover{ background-position: -64px 0px;}
+			   }
+		#twitter { background-position: 0 -32px; 
+			   &:hover{ background-position:0 0; }
+			 }
+		#flickr { background-position: -128px -32px; 
+			  &:hover{ background-position: -128px 0; }
+			}
+		#linkedin { background-position: -32px -32px; 
+			    &:hover{ background-position: -32px 0; }
+			  }
+		#github { background-position: -96px -32px; 
+			  &:hover{ background-position: -96px 0; }
+			}
+	      }
 }
 
 
 div.add_post {
-    width: 478px; float: right; margin: 40px 90px 0 0; 
+    width: 578px; float: right; margin: 40px 90px 0 0; 
     
-    h1 { font-size: 3em; color: $pink; margin: 5px 0; }
+    h1 { font-size: 3.5em; color: $pink; margin: 5px 0; }
     
     .art {  
 	padding: 30px;
@@ -68,7 +92,7 @@ div.add_post {
 	.art_info{
 	    margin-top: 10px;
 	    .art_comment {}
-	    .art_author {color: $light_blue; font-weight: bold;}
+	    .art_author {color: $yellow; font-weight: bold;}
 	    .art_date {font-size: 0.6em;}
 	}
     }
@@ -87,49 +111,98 @@ div.add_post {
     }
     div {	
 	img {
-	    max-width: 416px;
+	    max-width: 516px;
 	}
     }
 }
 
 /***************** YOUR POST PAGE ************************/
 
-div.add_post.your_post {width: 476px; margin: 40px auto; float: none; 
-			h1 {font-size: 2em; color: white; margin: 0 0 21px 0;}
+div.add_post.your_post { width: 576px; margin: 40px auto; float: none; 
+			 h1 {font-size: 3.5em; color: white; margin: 0 0 21px 0;}
 		       }
 
 /***************** NEW POST PAGE ************************/
 
 div.form_newpost {
+    float: left;
     background-color: $black_t;
     padding: 30px;
     margin: 40px 50px;
     color: white;
-    width: 530px;
-    h1 {margin-top: 0;}
+    width: 630px;
     overflow:hidden;
-    label input, label textarea { border: 1px solid black; width: 100%;
+    font-size: 1.2em;
+
+    h1 {margin-top: 0; font-size: 3.5em;}
+    label input, label textarea { border: 1px solid black; width: 100%; font-size: 1.1em;
 				  &:focus {outline: none; border: 1px solid $pink;}
 				}
-    label textarea {height: 50px;}
+    label input     { height: 30px; }
+    label textarea  { height: 80px; }
+    .info-comment   { text-align: right; margin-top: 3px; }
+
     .submit {
-	background-color: $pink; float:left; color:white; padding: 9px 12px; border: none; cursor:pointer; margin-top:5px; font-weight: bold;
+	background-color: $pink; float:left; color:white; padding: 9px 12px; border: none; cursor:pointer; margin-top:5px; font-weight: bold; font-size: 0.8em;
 	&:hover {background-color: $pink_t;}
     }
-    div.submit { font-family: arial; margin-left: 5px; padding: 9px 10px; font-size: 0.80em; background-color:$grey;
-		 &:hover {background-color: $grey_t;}
-		 a {color: white;}
+    .dictate {
+	background-color: $yellow; color: #333; padding: 6px 12px; border: none; cursor:pointer; margin-top:5px; font-weight: bold; font-size: 0.8em;
+    	&:hover {background-color: $yellow_t;}
+    }
+    div.submit { @include btn_grey;
 	       }
     div.error {color: $pink;}
-    input[type='file'] {
-	background: #000;
-	color: #fff;
-	padding: 6px 0px 6px 10px;
-	vertical-align: top;
-	margin: 2px 0 10px 0;
-    }
+    input[type='file'] { background: #333; color: #fff;	padding: 6px 0px 6px 10px; vertical-align: top; margin: 2px 0 10px 0; }
 }
 
+div#speechComment { 
+    position: absolute; left: 780px; width: 30vw; padding: 20px; margin-top: 127px; background-color: $pink_t; color: white; font-size: 1.2em;
+    #results { background-color: white; color: black; }
+    select   { color: white; padding: 4px; background-color: #555; border: 1px solid #555; font-weight: bold; 
+	       option {font-weight: bold;}
+	     }
+    #copy_button { @include btn_grey;}
+}
+
+.info-comment { color: $yellow; font-size: 0.9em;}
+
+
+/*----------------------- NOT ALLOWED page -------------------------*/
+
+html.not-allowed   { background-color: $pink; }
+#not-allowed       { margin: 50px auto 0; width: 800px; height: 460px; background-image: url(../images/not-allowed-white.png); }
+.not-social { position: absolute; bottom: 5px; left: 5px;
+
+	      a { width: 32px; height: 32px; display: inline-block; margin-left: 8px; }
+	      #instagram { background: transparent url(../images/icons/instagram_white.png) no-repeat 0 0; }
+	      #twitter { background: transparent url(../images/icons/twitter_white.png) no-repeat 0 0; }
+	      #flickr { background: transparent url(../images/icons/flickr_white.png) no-repeat 0 0;  }
+	      #linkedin { background: transparent url(../images/icons/linkedin_white.png) no-repeat 0 0; }
+	      #github { background: transparent url(../images/icons/github_white.png) no-repeat 0 0; }   
+	    }
+
+
+#overlay {
+    position:fixed;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: #000000 url(../images/bg.JPG) no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    opacity: .9;
+    filter: alpha(opacity=90);
+    -moz-opacity: .9;
+    z-index: 101;
+}
 
 
 /*********************************************************************
@@ -140,7 +213,7 @@ div.form_newpost {
 }
 
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 820px) {
     div.add_post {
 	float: none;
 	margin: auto;
@@ -151,25 +224,21 @@ div.form_newpost {
 	    }
 	}
     }
-    div.info { overflow: hidden; position:inherit;}
-    div.add_post { clear: both; overflow: hidden;}
-
-    div.add_post.your_post {width: 478px;}
-    div.info { width: 530px;} 
+    div.info        { overflow: hidden; position:inherit; width: 530px; }
+    div.add_post    { clear: both; overflow: hidden;}
+    div.add_post.your_post { width: 478px; }
 }
 
 
-@media screen and (max-width: 990px) and (min-width:700px)  {
-    div.info {
-	width: 160px;
-	height: 410px;
-    }
+@media screen and (max-width: 990px) and (min-width:820px)  {
+    div.info { width: 160px; height: 410px; }
     div.info div.header {
-	/*JP    
+	/*JP    padding: 106px 0px 39px 5px;
+	  margin: -9px -44px 42px 0px;
+	  */
+	
 	float:none;padding: 150px 13px 32px 0;
 	text-align: right;
-	*/
-	padding: 106px 0px 39px 5px;
 	h1 {
 	    -webkit-transform: rotate(-90deg);
 	    -moz-transform: rotate(-90deg);
@@ -180,11 +249,11 @@ div.form_newpost {
 	    -moz-transition: all 1s;
 	    -o-transition: all 1s;
 	    transition: all 1s;
-	    /*JP*/
-	    margin: -9px -44px 42px 0px;
+	/*JP-margin*/
+
 	}
     }
-    div.info div.social {padding: 0 32px 29px 23px;}
+    div.info div.social { padding: 0 32px 15px 29px; }
 }
 
 
@@ -192,14 +261,12 @@ div.form_newpost {
 @media screen and (min-width: 990px) {
 
     div.add_post {
-	width: 562px;
+	width: 662px;
 	div {	
-	    img {
-		max-width: 500px;
-	    }
+	    img { max-width: 600px; }
 	}
     }
 
-    div.add_post.your_post {width: 562px;}
+    div.add_post.your_post { width: 662px; }
 
 }

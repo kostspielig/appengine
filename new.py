@@ -13,6 +13,8 @@ from google.appengine.api import users
 from google.appengine.api import memcache
 from google.appengine.ext import db
 from google.appengine.api import images
+#from instagram.client import InstagramAPI
+
 
 template_dir = os.path.join(os.path.dirname(__file__))
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
@@ -86,7 +88,7 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
         
-def all_arts(update = False):
+"""def all_arts(update = False):
     key = 'all'
     arts = memcache.get(key)
     if arts is None or update:
@@ -94,16 +96,30 @@ def all_arts(update = False):
         arts = list(arts)
         memcache.set(key,arts)
     return arts
-
+"""
 class All(Handler):
     def get(self):
         self.render_front()
         
     def render_front(self):
-        arts = all_arts()
+        arts = Art.all().order('-date')
+        # Memcache call
         noinfo = 1
         self.render("index.html", arts = arts, noinfo = noinfo)
 
+class LoadAll(Handler):
+    def get(self, offset):
+        self.render_front(offset)
+        
+    def render_front(self, offset):
+        ioffset = int(offset)
+        arts = Art.all().order('-date').run( offset=ioffset )
+        # Memcache call
+        noinfo = 1
+        self.render("getPost.html", arts = arts, noinfo = noinfo)
+
+    
+"""
 def top_arts(update = False):
     key = 'top'
     arts = memcache.get(key)
@@ -112,14 +128,12 @@ def top_arts(update = False):
         arts = Art.all().order('-date').fetch(limit=3)
         arts = list(arts)
         memcache.set(key, arts)
-    else:
-        logging.error('get cached copy')
     return arts
-
-
+"""
 class MainPage(Handler):
     def render_front(self):
-        arts = top_arts()
+        arts = Art.all().order('-date').fetch(limit=3)
+        # Memcache call
         for art in arts:
             art.date = art.date
         user = users.get_current_user()
@@ -142,8 +156,17 @@ class Carrasco(Handler):
 
 class NotFound(Handler):
 	def get(self):
-		self.render("404.html")		
+		self.render("404.html")
 
+class Social(Handler):
+    def get(self):
+    # api = InstagramAPI(client_id='7f93273ebbbd4d82b2bc93df598f00c5', client_secret='156630aeb6ac46eb95daaecd84118021')
+    #   popular_media = api.media_popular(count=5)
+    #   for media in popular_media:
+    #   print media.images['standard_resolution'].url
+     
+        self.render("social.html")
+        
 class Cookie(Handler):
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
@@ -185,8 +208,8 @@ class NewPost(Handler):
             avatar = db.Blob(img)
             a = Art(author=author, comment=comment, avatar=avatar)
             a.put()
-            all_arts(True)
-            top_arts(True)
+            #all_arts(True)
+            #top_arts(True)
             
             self.redirect("/blog/%s" % str(a.key().id()))
         else:
@@ -219,7 +242,9 @@ app = webapp2.WSGIApplication([('/blog/?', MainPage),
                               ('/blog/all/?', All),
                                ('/blog/([0-9]+)', PostPage),
                                ('/', MainPage),
+                               ('/social', Social),
                                ('/img', Image),
+                               ('/loadAll/([0-9]+)', LoadAll),
 							   ('/.*', NotFound)],
                               debug=True)
 

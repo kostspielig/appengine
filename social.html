@@ -7,36 +7,22 @@
     <link rel="icon" href="/style/images/favicon.png">
 
     <!--  <link href='http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700' rel='stylesheet' type='text/css'>
-      --> 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="/js/all.js"></script>
+      -->
 
     <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>    
     <link rel="stylesheet" type="text/css" media="screen" href="/style/css/style.css">
-    <title>Personal page - Maria Carrasco</title>
+    <title>Social - Maria Carrasco</title>
     
   </head>
   <body>
-    <!--   <div class="user_sign">
-	   {{user}}
-	   <a href={{url|safe}}> {{url_linktext}}</a>
-    </div>-->
+
     <div class="add_post">
-      <h1>Picture of the day</h1>
-      <div id="arts">
-	{% for art in arts %}
-	<div class="art">
-	  <div><a href="/blog/{{art.key().id()}}"><img src="../img?img_id={{art.key()}}"></img></a></div>
-	  <div class="art_info">
-	    <div class="art_comment">{{art.comment}}</div>
-	    <div class="art_author">{{art.author}}</div>
-	    <div class="art_date">{{art.date|datetimeformat('%d-%m-%Y')}}</div>
-	  </div>
-	</div>
-	{% endfor %}
-      </div>
-      <div class="all"><a id="view-all" href="/blog/all">VIEW ALL</a></div>
-      <div class="all"><a href="/blog/newpost">ADD POST</a></div>
+      <h1>Twitter</h1>
+
+      <a class="twitter-timeline" href="https://twitter.com/kostspielig" data-widget-id="399636004761387008" data-chrome="nofooter transparent noheader noborders noscrollbar">Tweets by @kostspielig</a>
+      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+ 
+
 
     </div>
 

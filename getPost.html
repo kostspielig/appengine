@@ -1,0 +1,11 @@
+
+{% for art in arts %}
+<div class="art">
+  <div><a href="/blog/{{art.key().id()}}"><img src="../img?img_id={{art.key()}}"></img></a></div>
+  <div class="art_info">
+    <div class="art_comment">{{art.comment}}</div>
+    <div class="art_author">{{art.author}}</div>
+    <div class="art_date">{{art.date|datetimeformat('%d-%m-%Y')}}</div>
+  </div>
+</div>
+{% endfor %}
