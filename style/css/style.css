@@ -73,6 +73,10 @@ div.info {
       background-position: -96px -32px; }
       div.info div.social #github:hover {
         background-position: -96px 0; }
+    div.info div.social #eyeem {
+      background-position: -160px -32px; }
+      div.info div.social #eyeem:hover {
+        background-position: -160px 0; }
 
 div.add_post {
   width: 578px;
