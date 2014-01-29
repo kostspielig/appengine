@@ -1,81 +1,41 @@
 import webapp2
-import hashlib
 import cgi
-import re
 import jinja2
 import os
-import hmac
-import random
 import string
 import logging
+from string import letters
+import sys
 
-from google.appengine.api import users
-from google.appengine.api import memcache
+
 from google.appengine.ext import db
 from google.appengine.api import images
+
+# Inporting my libraries
+import handlers
+sys.path.append('./lib/')
+import utils
+
+sys.path.append('./lib/DB/')
+import art
+import appuser
+
+
+#from google.appengine.api import users
+#from google.appengine.api import memcache
 #from instagram.client import InstagramAPI
 
 
-template_dir = os.path.join(os.path.dirname(__file__))
+template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
 
-post =  000;
-SECRET = 'mmm';
 
 def datetimeformat(value, format='%H:%M / %d-%m-%Y'):
     return value.strftime(format)
 jinja_env.filters['datetimeformat'] = datetimeformat
 
-def hash_str(s):
-    return hmac.new(SECRET, s).hexdigest()
+post =  000;
 
-def make_secure_val(s):
-    return '%s|%s' %(s, hash_str(s))
-
-def check_secure_val(h):
-    val = h.split('|')[0]
-    if h == make_secure_val(val):
-        return val
-
-def make_salt():
-    return ''.join(random.sample(string.letters, 5))
-
-def make_pw_hash(name, pw):
-    salt = make_salt()
-    return hashlib.sha256(name + pw + salt).hexdigest() + ','+ salt
-
-def valid_pw(name, pw, h):
-    hp = h.split(',')
-    if hp[0] == hashlib.sha256(name + pw + hp[1]).hexdigest():
-        return True
-    else:
-        return False
-    
-class Art(db.Model):
-    """Models a user entry with an author, comment, avatar, and date."""
-    author = db.StringProperty(required=True)
-    comment = db.StringProperty(multiline=True)
-    avatar = db.BlobProperty()
-    date = db.DateTimeProperty(auto_now_add=True)
-        
-    def render(self):
-        self._render_text = self.content #.replace('\n', '<br>')
-
-
-class MainPage2(webapp2.RequestHandler):
-    def get(self):
-        user = users.get_current_user()
-
-        if user:
-            self.response.headers['Content-Type'] = 'text/plain'
-            self.response.out.write('Hello, ' + user.nickname())
-        else:
-            self.redirect(users.create_login_url(self.request.uri))
-
-
-USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
-def valid_username(username):
-    return USER_RE.match(username)
 
 class Handler(webapp2.RequestHandler):
     def write(self, *a, **kw):
@@ -87,7 +47,101 @@ class Handler(webapp2.RequestHandler):
 
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
+    def set_secure_cookie(self, name, val):
+        cookie_val = utils.make_secure_val(val)
+        self.response.headers.add_header(
+            'Set-Cookie',
+            '%s=%s; Path=/' % (name, cookie_val))
+
+    def read_secure_cookie(self, name):
+        cookie_val = self.request.cookies.get(name)
+        return cookie_val and utils.check_secure_val(cookie_val)
+
+    def login(self, user):
+        self.set_secure_cookie('user_id', str(user.key().id()))
+
+    def logout(self):
+        self.response.headers.add_header('Set-Cookie', 'user_id=; Path=/')
+
+    def initialize(self, *a, **kw):
+        webapp2.RequestHandler.initialize(self, *a, **kw)
+        uid = self.read_secure_cookie('user_id')
+        self.user = uid and appuser.User.by_id(int(uid))
         
+
+class Signup(Handler):
+    def get(self):
+        self.render("signup-form.html")
+
+    def post(self):
+        have_error = False
+        self.username = self.request.get('username')
+        self.password = self.request.get('password')
+        self.verify = self.request.get('verify')
+        self.email = self.request.get('email')
+
+        params = dict(username = self.username,
+                      email = self.email)
+
+        if not utils.valid_username(self.username):
+            params['error_username'] = "That's not a valid username."
+            have_error = True
+
+        if not utils.valid_password(self.password):
+            params['error_password'] = "That wasn't a valid password."
+            have_error = True
+        elif self.password != self.verify:
+            params['error_verify'] = "Your passwords didn't match."
+            have_error = True
+
+        if not utils.valid_email(self.email):
+            params['error_email'] = "That's not a valid email."
+            have_error = True
+
+        if have_error:
+            self.render('signup-form.html', **params)
+        else:
+            self.done()
+
+    def done(self, *a, **kw):
+        raise NotImplementedError
+
+
+class Register(Signup):
+    def done(self):
+        #make sure the user doesn't already exist
+        u = appuser.User.by_name(self.username)
+        if u:
+            msg = 'That user already exists.'
+            self.render('signup-form.html', error_username = msg)
+        else:
+            u = appuser.User.register(self.username, self.password, self.email)
+            u.put()
+
+            self.login(u)
+            self.redirect('/')
+
+class Login(Handler):
+    def get(self):
+        self.render('login-form.html')
+
+    def post(self):
+        username = self.request.get('username')
+        password = self.request.get('password')
+
+        u = appuser.User.login(username, password)
+        if u:
+            self.login(u)
+            self.redirect('/')
+        else:
+            msg = 'Invalid login'
+            self.render('login-form.html', error = msg)
+
+class Logout(Handler):
+    def get(self):
+        self.logout()
+        self.redirect('/')
+
 """def all_arts(update = False):
     key = 'all'
     arts = memcache.get(key)
@@ -102,7 +156,7 @@ class All(Handler):
         self.render_front()
         
     def render_front(self):
-        arts = Art.all().order('-date')
+        arts = art.Art.all().order('-date')
         # Memcache call
         noinfo = 1
         self.render("index.html", arts = arts, noinfo = noinfo)
@@ -113,7 +167,7 @@ class LoadAll(Handler):
         
     def render_front(self, offset):
         ioffset = int(offset)
-        arts = Art.all().order('-date').run( offset=ioffset )
+        arts = art.Art.all().order('-date').run( offset=ioffset )
         # Memcache call
         noinfo = 1
         self.render("getPost.html", arts = arts, noinfo = noinfo)
@@ -131,12 +185,22 @@ def top_arts(update = False):
     return arts
 """
 class MainPage(Handler):
-    def render_front(self):
-        arts = Art.all().order('-date').fetch(limit=3)
+    def render_front(self, username = None):
+        arts = art.Art.all().order('-date').fetch(limit=3)
         # Memcache call
-        for art in arts:
-            art.date = art.date
-        user = users.get_current_user()
+        for artitem in arts:
+            artitem.date = artitem.date
+
+        if username:
+            url = '/logout'
+            url_linktext = 'logout'
+        else:
+            url = '/login'
+            url_linktext = 'login'
+            username = ''
+            
+        """user = users.get_current_user()
+        
         if user:
             url = users.create_logout_url(self.request.uri)
             url_linktext = 'Logout'
@@ -144,15 +208,14 @@ class MainPage(Handler):
             url = users.create_login_url(self.request.uri)
             url_linktext = 'Login'
             user = ""
-            
-        self.render("index.html", arts = arts, url_linktext = url_linktext, url =url, user=user)
+        """
+        self.render("index.html", arts = arts, url_linktext = url_linktext, url =url, username=username)
 
     def get(self):
-        self.render_front()
-
-class Carrasco(Handler):
-    def get(self):
-        self.render("carrasco.html")
+        if self.user:
+            self.render_front(self.user.name)
+        else:
+            self.render_front()
 
 class NotFound(Handler):
 	def get(self):
@@ -173,12 +236,12 @@ class Cookie(Handler):
         visits_cookie = self.request.cookies.get('visits','0')
         visits = 0
         if visits_cookie:
-            visits_cookie = check_secure_val(visits_cookie)
+            visits_cookie = utils.check_secure_val(visits_cookie)
             if visits_cookie:
                 visits = int(visits_cookie)
 
         visits += 1
-        visits_new = make_secure_val(str(visits))
+        visits_new = utils.make_secure_val(str(visits))
 
         self.response.headers.add_header('Set-Cookie', 'visits=%s' %visits_new)
         self.write("You have been here %s times" % visits)
@@ -188,12 +251,16 @@ class NewPost(Handler):
         self.render("newpost.html", author = author, comment = comment, error = error )
         
     def get(self):
-        self.render_front()
+        if self.user:
+            self.render_front()
+        else:
+            self.redirect("/notAllowed")
 
     def post(self):
         #if users.get_current_user():
         #    author = users.get_current_user().nickname()
         #else:
+
         author = self.request.get("author")
         comment = cgi.escape(self.request.get("comment"))
         img = self.request.get("avatar")
@@ -206,7 +273,7 @@ class NewPost(Handler):
                 img = images.resize(img, 800)
                 
             avatar = db.Blob(img)
-            a = Art(author=author, comment=comment, avatar=avatar)
+            a = art.Art(author=author, comment=comment, avatar=avatar)
             a.put()
             #all_arts(True)
             #top_arts(True)
@@ -228,14 +295,6 @@ class PostPage(Handler):
         
         self.render("post.html", post =  post)
 
-class Image(webapp2.RequestHandler):
-    def get(self):
-        art = db.get(self.request.get('img_id'))
-        if art.avatar:
-                self.response.headers['Content-Type'] = 'image/png'
-                self.response.out.write(art.avatar)
-        else:
-                self.response.out.write("No image")
           
 app = webapp2.WSGIApplication([('/blog/?', MainPage),
                               ('/blog/newpost/?', NewPost),
@@ -243,8 +302,10 @@ app = webapp2.WSGIApplication([('/blog/?', MainPage),
                                ('/blog/([0-9]+)', PostPage),
                                ('/', MainPage),
                                ('/social', Social),
-                               ('/img', Image),
+                               ('/img', handlers.Image),
                                ('/loadAll/([0-9]+)', LoadAll),
+                               ('/signup', Register),
+                               ('/login', Login),
+                               ('/logout', Logout),
 							   ('/.*', NotFound)],
                               debug=True)
-
