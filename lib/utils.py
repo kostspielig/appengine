@@ -7,7 +7,7 @@ PASS_RE = re.compile(r"^.{3,20}$")
 EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
 
 
-secret = 'fart';
+secret = 'whateversecretyouwanttochoose';
 
 # Validating inputs
 def valid_username(username):
