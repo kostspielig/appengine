@@ -21,13 +21,19 @@ a {
   text-decoration: none; }
 
 div.user_sign {
-  float: right;
-  margin: 10px; }
+  position: absolute;
+  margin: 10px;
+  right: 10px; }
   div.user_sign a {
     text-decoration: none;
     color: #333333; }
     div.user_sign a:hover {
       color: rgba(248, 202, 77, 0.7); }
+  div.user_sign a.user {
+    color: #ea6045;
+    border-right: 1px solid black;
+    padding-right: 5px;
+    cursor: alias; }
 
 div.info {
   position: fixed;
@@ -201,6 +207,13 @@ div.form_newpost {
     padding: 6px 0px 6px 10px;
     vertical-align: top;
     margin: 2px 0 10px 0; }
+  div.form_newpost .signup {
+    float: left;
+    margin: 10px 15px; }
+    div.form_newpost .signup a {
+      color: #f8ca4d; }
+    div.form_newpost .signup a:hover {
+      color: #ea6045; }
 
 div#speechComment {
   position: absolute;
@@ -316,7 +329,7 @@ html.not-allowed {
 
   div.add_post.your_post {
     width: 478px; } }
-@media screen and (max-width: 990px) and (min-width: 820px) {
+@media screen and (max-width: 1080px) and (min-width: 820px) {
   div.info {
     width: 160px;
     height: 410px; }

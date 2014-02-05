@@ -5,7 +5,6 @@ $(function(){
 	if (e.keyCode == 27) { bringWallpaper(); }   // esc
     });
     loadAllPosts();
-    
 });
 
 var overlay = false;
@@ -25,4 +24,6 @@ function loadAllPosts() {
 	}});
     });
 }
+
+
 

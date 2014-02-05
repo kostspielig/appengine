@@ -40,12 +40,19 @@ html {
 a { text-decoration:none; }
 
 div.user_sign {
-    float: right;
+    position: absolute;
     margin: 10px;
+    right:10px;
 
     a { text-decoration: none; color:$dark_grey; 
 	&:hover {color: $yellow_t;}
       }
+    a.user {
+	color: #ea6045;
+	border-right: 1px solid black;
+	padding-right: 5px;
+	cursor: alias;
+    }
 }
 
 div.info {
@@ -158,6 +165,12 @@ div.form_newpost {
 	       }
     div.error {color: $pink;}
     input[type='file'] { background: #333; color: #fff;	padding: 6px 0px 6px 10px; vertical-align: top; margin: 2px 0 10px 0; }
+    .signup {
+	float: left;
+	margin: 10px 15px;
+	a { color: $yellow; }
+	a:hover { color: $pink; }
+    }
 }
 
 div#speechComment { 
@@ -234,7 +247,7 @@ html.not-allowed   { background-color: $pink; }
 }
 
 
-@media screen and (max-width: 990px) and (min-width:820px)  {
+@media screen and (max-width: 1080px) and (min-width:820px)  {
     div.info { width: 160px; height: 410px; }
     div.info div.header {
 	/*JP    padding: 106px 0px 39px 5px;
